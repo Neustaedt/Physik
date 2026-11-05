@@ -1,0 +1,350 @@
+<title>Äußerer Fotoeffekt</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: Gerätekonsole — Versuchsszene oben, Bedienfeld darunter; ab 900px nebeneinander */
+:root{
+  --bg:#E9EDF1;
+  --surface:#FFFFFF;
+  --surface-2:#F3F6F9;
+  --ink:#141C25;
+  --ink-muted:#5B6A79;
+  --line:#C6D0DA;
+  --line-strong:#9AA8B6;
+  --accent:#2C6DA8;
+  --accent-soft:#DCE8F3;
+  --vis:#E09B12;
+  --uv:#7B5BD1;
+  --electron:#1F6F4A;
+  --off:#8A97A4;
+  --metal:#B9C2CB;
+  --metal-dark:#8E9AA6;
+  /* Nur Systemschriften — die Seite laedt nichts aus dem Netz nach. */
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-num: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1318;
+    --surface:#161D25;
+    --surface-2:#1C242E;
+    --ink:#E3EAF1;
+    --ink-muted:#93A2B1;
+    --line:#2B3744;
+    --line-strong:#43525F;
+    --accent:#5FA3D9;
+    --accent-soft:#1E3346;
+    --vis:#F0B64A;
+    --uv:#9D83EA;
+    --electron:#54BE8B;
+    --off:#6B7988;
+    --metal:#6E7B88;
+    --metal-dark:#515E6B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1318;
+  --surface:#161D25;
+  --surface-2:#1C242E;
+  --ink:#E3EAF1;
+  --ink-muted:#93A2B1;
+  --line:#2B3744;
+  --line-strong:#43525F;
+  --accent:#5FA3D9;
+  --accent-soft:#1E3346;
+  --vis:#F0B64A;
+  --uv:#9D83EA;
+  --electron:#54BE8B;
+  --off:#6B7988;
+  --metal:#6E7B88;
+  --metal-dark:#515E6B;
+  color-scheme: dark;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--font-ui);
+  font-size:16px;
+  line-height:1.5;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+  padding-block:20px 32px;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+
+header h1{
+  font-size:clamp(1.3rem,1.1rem + 1vw,1.75rem);
+  font-weight:600;margin:0;letter-spacing:-0.01em;text-wrap:balance;
+}
+
+.console{display:grid;grid-template-columns:1fr;gap:18px}
+@media (min-width:900px){
+  .console{grid-template-columns:minmax(0,1.6fr) minmax(290px,1fr);align-items:start}
+}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;min-width:0}
+.stage{padding:10px}
+.stage svg{display:block;width:100%;height:auto;max-width:100%}
+
+.controls{display:flex;flex-direction:column;gap:0}
+.group{padding:16px;border-bottom:1px solid var(--line)}
+.group:last-child{border-bottom:0}
+.group h2{
+  margin:0 0 12px;font-size:0.72rem;font-weight:600;
+  letter-spacing:0.09em;text-transform:uppercase;color:var(--ink-muted);
+}
+
+.switches{display:flex;flex-direction:column;gap:10px}
+button{
+  font:inherit;font-weight:500;color:var(--ink);
+  background:var(--surface-2);border:1px solid var(--line-strong);
+  border-radius:8px;min-height:48px;padding:10px 14px;cursor:pointer;
+  text-align:left;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;width:100%;-webkit-tap-highlight-color:transparent;
+}
+button:hover{border-color:var(--accent)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.state{font-family:var(--font-num);font-size:0.8rem;color:var(--ink-muted);white-space:nowrap}
+button[aria-pressed="true"] .state{color:var(--accent);font-weight:500}
+
+.slider-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
+.slider-head label{font-weight:500;font-size:0.95rem}
+.slider-head output{
+  font-family:var(--font-num);font-variant-numeric:tabular-nums;
+  font-size:1.05rem;font-weight:500;
+}
+input[type=range]{width:100%;height:44px;accent-color:var(--accent);background:transparent;cursor:pointer}
+input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+.scale{
+  display:flex;justify-content:space-between;
+  font-family:var(--font-num);font-size:0.72rem;color:var(--ink-muted);margin-top:-4px;
+}
+
+.note{margin:0;color:var(--ink-muted);font-size:0.78rem;max-width:70ch}
+
+@media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+
+<div class="wrap">
+  <header><h1>Äußerer Fotoeffekt</h1></header>
+
+  <div class="console">
+    <div class="panel stage">
+      <svg viewBox="0 0 820 460" role="img" aria-label="Versuchsaufbau: zwei Lampen und eine geerdete Zinkplatte">
+        <rect x="0" y="0" width="820" height="460" rx="6" fill="var(--surface-2)"/>
+
+        <!-- Lichtkegel -->
+        <polygon id="coneVis" points="119,132 560,100 560,260 119,158" fill="var(--vis)" opacity="0"/>
+        <polygon id="coneUv"  points="119,322 560,100 560,260 119,348" fill="var(--uv)"  opacity="0"/>
+
+        <!-- Lampe 1: sichtbares Licht -->
+        <g id="lampVis">
+          <rect x="40" y="110" width="75" height="70" rx="7" fill="var(--metal)" stroke="var(--line-strong)" stroke-width="2"/>
+          <rect x="103" y="128" width="16" height="34" rx="3" fill="var(--metal-dark)"/>
+          <circle id="bulbVis" cx="76" cy="145" r="14" fill="var(--off)" stroke="var(--metal-dark)" stroke-width="2"/>
+          <rect x="64" y="180" width="24" height="26" fill="var(--metal-dark)"/>
+          <rect x="34" y="206" width="84" height="10" rx="3" fill="var(--metal-dark)"/>
+          <text x="76" y="236" text-anchor="middle" font-family="var(--font-ui)" font-size="14" fill="var(--ink-muted)">sichtbares Licht</text>
+        </g>
+
+        <!-- Lampe 2: UV-Licht -->
+        <g id="lampUv">
+          <rect x="40" y="300" width="75" height="70" rx="7" fill="var(--metal)" stroke="var(--line-strong)" stroke-width="2"/>
+          <rect x="103" y="318" width="16" height="34" rx="3" fill="var(--metal-dark)"/>
+          <circle id="bulbUv" cx="76" cy="335" r="14" fill="var(--off)" stroke="var(--metal-dark)" stroke-width="2"/>
+          <rect x="64" y="370" width="24" height="26" fill="var(--metal-dark)"/>
+          <rect x="34" y="396" width="84" height="10" rx="3" fill="var(--metal-dark)"/>
+          <text x="76" y="426" text-anchor="middle" font-family="var(--font-ui)" font-size="14" fill="var(--ink-muted)">UV-Licht</text>
+        </g>
+
+        <!-- Elektronen -->
+        <g id="electrons"></g>
+
+        <!-- Zinkplatte -->
+        <rect x="560" y="100" width="13" height="160" rx="2" fill="var(--metal)" stroke="var(--line-strong)" stroke-width="2"/>
+        <text x="604" y="93" text-anchor="middle" font-family="var(--font-ui)" font-size="15" fill="var(--ink-muted)">Zinkplatte</text>
+
+        <!-- Erdung -->
+        <line x1="566" y1="260" x2="566" y2="352" stroke="var(--metal-dark)" stroke-width="5"/>
+        <line x1="536" y1="356" x2="596" y2="356" stroke="var(--metal-dark)" stroke-width="5" stroke-linecap="round"/>
+        <line x1="547" y1="368" x2="585" y2="368" stroke="var(--metal-dark)" stroke-width="5" stroke-linecap="round"/>
+        <line x1="558" y1="380" x2="574" y2="380" stroke="var(--metal-dark)" stroke-width="5" stroke-linecap="round"/>
+        <text x="566" y="408" text-anchor="middle" font-family="var(--font-ui)" font-size="14" fill="var(--ink-muted)">geerdet</text>
+      </svg>
+    </div>
+
+    <div class="panel controls">
+      <div class="group">
+        <h2>Lichtquelle</h2>
+        <div class="switches">
+          <button id="btnVis" type="button" aria-pressed="false">
+            <span>Sichtbares Licht</span><span class="state" id="stVis">aus</span>
+          </button>
+          <button id="btnUv" type="button" aria-pressed="false">
+            <span>UV-Licht</span><span class="state" id="stUv">aus</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="slider-head">
+          <label for="intensity">Intensität</label>
+          <output id="outIntensity" for="intensity">50 %</output>
+        </div>
+        <input type="range" id="intensity" min="10" max="100" step="5" value="50">
+        <div class="scale"><span>10 %</span><span>100 %</span></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">Hinweis: Diese Simulation ist ein vereinfachtes Modell des Versuchsablaufs.</p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var SVG_NS = "http://www.w3.org/2000/svg";
+  var POOL = 56; // Anzahl wiederverwendeter Elektronen
+
+  var state = {
+    lamp: "off",   // "off" | "vis" | "uv"
+    intensity: 50
+  };
+
+  var el = {
+    btnVis: document.getElementById("btnVis"),
+    btnUv: document.getElementById("btnUv"),
+    stVis: document.getElementById("stVis"),
+    stUv: document.getElementById("stUv"),
+    intensity: document.getElementById("intensity"),
+    outIntensity: document.getElementById("outIntensity"),
+    coneVis: document.getElementById("coneVis"),
+    coneUv: document.getElementById("coneUv"),
+    bulbVis: document.getElementById("bulbVis"),
+    bulbUv: document.getElementById("bulbUv"),
+    electrons: document.getElementById("electrons")
+  };
+
+  // --- Elektronen: wiederverwendbarer Pool ---------------------------------
+  var pool = [];
+  (function buildPool() {
+    for (var i = 0; i < POOL; i++) {
+      var g = document.createElementNS(SVG_NS, "g");
+      g.setAttribute("opacity", "0");
+      var c = document.createElementNS(SVG_NS, "circle");
+      c.setAttribute("r", "6");
+      c.setAttribute("fill", "var(--electron)");
+      var m = document.createElementNS(SVG_NS, "line");
+      m.setAttribute("stroke", "var(--surface-2)");
+      m.setAttribute("stroke-width", "2");
+      m.setAttribute("stroke-linecap", "round");
+      g.appendChild(c);
+      g.appendChild(m);
+      el.electrons.appendChild(g);
+      pool.push({ node: g, circle: c, minus: m, alive: false, x: 0, y: 0, vx: 0, vy: 0, life: 0 });
+    }
+  })();
+
+  function spawnElectron() {
+    for (var i = 0; i < pool.length; i++) {
+      if (!pool[i].alive) {
+        var p = pool[i];
+        p.alive = true;
+        p.x = 558;
+        p.y = 108 + Math.random() * 144;    // entlang der beleuchteten Plattenseite
+        p.vx = -(70 + Math.random() * 90);   // nach links, von der Platte weg
+        p.vy = (Math.random() - 0.5) * 90;
+        p.life = 1.1 + Math.random() * 0.6;
+        return;
+      }
+    }
+  }
+
+  function updateElectrons(dt) {
+    for (var i = 0; i < pool.length; i++) {
+      var p = pool[i];
+      if (!p.alive) continue;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.life -= dt;
+      if (p.life <= 0 || p.x < 100) {
+        p.alive = false;
+        p.node.setAttribute("opacity", "0");
+        continue;
+      }
+      p.circle.setAttribute("cx", p.x.toFixed(1));
+      p.circle.setAttribute("cy", p.y.toFixed(1));
+      p.minus.setAttribute("x1", (p.x - 3).toFixed(1));
+      p.minus.setAttribute("x2", (p.x + 3).toFixed(1));
+      p.minus.setAttribute("y1", p.y.toFixed(1));
+      p.minus.setAttribute("y2", p.y.toFixed(1));
+      p.node.setAttribute("opacity", Math.min(1, p.life).toFixed(2));
+    }
+  }
+
+  function emitting() {
+    return state.lamp === "uv";
+  }
+
+  function renderControls() {
+    el.btnVis.setAttribute("aria-pressed", String(state.lamp === "vis"));
+    el.btnUv.setAttribute("aria-pressed", String(state.lamp === "uv"));
+    el.stVis.textContent = state.lamp === "vis" ? "ein" : "aus";
+    el.stUv.textContent = state.lamp === "uv" ? "ein" : "aus";
+
+    el.bulbVis.setAttribute("fill", state.lamp === "vis" ? "var(--vis)" : "var(--off)");
+    el.bulbUv.setAttribute("fill", state.lamp === "uv" ? "var(--uv)" : "var(--off)");
+
+    var frac = state.intensity / 100;
+    el.coneVis.setAttribute("opacity", state.lamp === "vis" ? String(0.14 + 0.34 * frac) : "0");
+    el.coneUv.setAttribute("opacity",  state.lamp === "uv"  ? String(0.12 + 0.30 * frac) : "0");
+
+    el.outIntensity.textContent = state.intensity + " %";
+  }
+
+  var last = null;
+  var emitAccu = 0;
+  function tick(now) {
+    if (last === null) last = now;
+    var dt = Math.min((now - last) / 1000, 0.1);
+    last = now;
+
+    if (emitting()) {
+      // Zahl der austretenden Elektronen waechst mit der Intensitaet
+      emitAccu += dt * (5 + 30 * (state.intensity / 100));
+      while (emitAccu >= 1) {
+        spawnElectron();
+        emitAccu -= 1;
+      }
+    } else {
+      emitAccu = 0;
+    }
+
+    updateElectrons(dt);
+    requestAnimationFrame(tick);
+  }
+
+  el.btnVis.addEventListener("click", function () {
+    state.lamp = (state.lamp === "vis") ? "off" : "vis";
+    renderControls();
+  });
+
+  el.btnUv.addEventListener("click", function () {
+    state.lamp = (state.lamp === "uv") ? "off" : "uv";
+    renderControls();
+  });
+
+  el.intensity.addEventListener("input", function () {
+    state.intensity = Number(el.intensity.value);
+    renderControls();
+  });
+
+  renderControls();
+  requestAnimationFrame(tick);
+})();
+</script>
